@@ -4,7 +4,14 @@
  *
  * ------------------------------------------------------------------- */
 
-
+import {
+    COUNTDOWN_FINAL_DATE,
+    detailsBottomPx,
+    goTopShouldShow,
+    nextTabIndex,
+    overlayOpacity,
+    remainingParts,
+} from './site-behavior.js';
 
 (function(html) {
 
@@ -13,9 +20,7 @@
     html.className = html.className.replace(/\bno-js\b/g, '') + 'js';
 
     const cfg = {
-
-        // Countdown Timer Final Date
-        finalDate : 'May 15, 2024 23:59:00',
+        finalDate: COUNTDOWN_FINAL_DATE,
     };
 
 
@@ -45,7 +50,7 @@
 
             preloader.addEventListener('transitionend', function afterTransition(e) {
                 if (e.target.matches('#preloader'))  {
-                    details.style.bottom = (window.innerHeight - details.offsetHeight) + 'px';
+                    details.style.bottom = detailsBottomPx(window.innerHeight, details.offsetHeight) + 'px';
                     body.classList.add('ss-show');
                     e.target.style.display = 'none';
                     preloader.removeEventListener(e.type, afterTransition);
@@ -75,31 +80,18 @@
         if (!(daysSpan && hoursSpan && minutesSpan && secondsSpan)) return;
 
         function timer() {
-
-            const now = new Date().getTime();
-            let diff = finalDate - now;
-
-            if (diff <= 0) {
+            const parts = remainingParts(finalDate, Date.now());
+            if (parts.expired) {
                 if (timeInterval) {
                     clearInterval(timeInterval);
                 }
                 return;
             }
 
-            let days = Math.floor( diff/(1000*60*60*24) );
-            let hours = Math.floor( (diff/(1000*60*60)) % 24 );
-            let minutes = Math.floor( (diff/1000/60) % 60 );
-            let seconds = Math.floor( (diff/1000) % 60 );
-
-            hours <= 9 ? hours = '0' + hours : hours;
-            minutes <= 9 ? minutes = '0' + minutes : minutes;
-            seconds <= 9 ? seconds = '0' + seconds : seconds;
-
-            daysSpan.textContent = days;
-            hoursSpan.textContent = hours;
-            minutesSpan.textContent = minutes;
-            secondsSpan.textContent = seconds;
-
+            daysSpan.textContent = parts.days;
+            hoursSpan.textContent = parts.hours;
+            minutesSpan.textContent = parts.minutes;
+            secondsSpan.textContent = parts.seconds;
         }
 
         timer();
@@ -268,7 +260,7 @@
 
             if (nextTab) {
                 let nextTabLink = document.createElement('a');
-                let nextTabLinkIndex = (i < tabPanels.length - 1) ? i + 1 : 0;
+                let nextTabLinkIndex = nextTabIndex(i, tabPanels.length);
 
                  // set up next tab link
                 nextTabLink.setAttribute('href', '#tab-link-' + nextTabLinkIndex);
@@ -432,7 +424,7 @@
 
             if (nextTab) {
                 let nextTabLink = document.createElement('a');
-                let nextTabLinkIndex = (i < tabPanels.length - 1) ? i + 1 : 0;
+                let nextTabLinkIndex = nextTabIndex(i, tabPanels.length);
 
                  // set up next tab link
                 nextTabLink.setAttribute('href', '#tab-link-' + nextTabLinkIndex);
@@ -526,14 +518,17 @@
 
         if (!goTopButton) return;
 
-        // Show or hide the button
-        if (window.scrollY >= pxShow) goTopButton.classList.add('link-is-visible');
+        if (goTopShouldShow(window.scrollY, pxShow)) {
+            goTopButton.classList.add('link-is-visible');
+        }
 
         window.addEventListener('scroll', function() {
-            if (window.scrollY >= pxShow) {
-                if(!goTopButton.classList.contains('link-is-visible')) goTopButton.classList.add('link-is-visible')
+            if (goTopShouldShow(window.scrollY, pxShow)) {
+                if (!goTopButton.classList.contains('link-is-visible')) {
+                    goTopButton.classList.add('link-is-visible');
+                }
             } else {
-                goTopButton.classList.remove("link-is-visible")
+                goTopButton.classList.remove('link-is-visible');
             }
         });
     };
@@ -550,25 +545,18 @@
         if (!(intro && details)) return;
 
         const checkpoint = intro.offsetHeight;
-        let opacity;
 
-        details.style.bottom = (window.innerHeight - details.offsetHeight) + 'px';
+        details.style.bottom = detailsBottomPx(window.innerHeight, details.offsetHeight) + 'px';
 
         window.addEventListener('resize', function() {
-            details.style.bottom = (window.innerHeight - details.offsetHeight) + 'px';
+            details.style.bottom = detailsBottomPx(window.innerHeight, details.offsetHeight) + 'px';
         });
 
         window.addEventListener('scroll', function() {
-
-            const currentScroll = window.pageYOffset;
-
-            if (currentScroll <= checkpoint) {
-                opacity = 1 - currentScroll / checkpoint;
-            } else {
-                opacity = 0;
-            }
-
-            details.style.setProperty('--overlay-opacity', opacity);
+            details.style.setProperty(
+                '--overlay-opacity',
+                overlayOpacity(window.pageYOffset, checkpoint),
+            );
         });
 
     };

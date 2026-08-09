@@ -21,29 +21,7 @@
     <!-- favicons
     ================================================== -->
     <link rel="manifest" href="site.webmanifest">
-	<script type="module">
-		// Import the functions you need from the SDKs you need
-		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-		import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-		// TODO: Add SDKs for Firebase products that you want to use
-		// https://firebase.google.com/docs/web/setup#available-libraries
-
-		// Your web app's Firebase configuration
-		// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-		const firebaseConfig = {
-		  apiKey: "AIzaSyCmhTpHfpGQGp7hRbTIRs_64z0Bt35cg5s",
-		  authDomain: "parker-fund.firebaseapp.com",
-		  projectId: "parker-fund",
-		  storageBucket: "parker-fund.appspot.com",
-		  messagingSenderId: "868659832478",
-		  appId: "1:868659832478:web:a59ce6bf7d1f8e96f37d8f",
-		  measurementId: "G-R9Y06QD0QY"
-		};
-
-		// Initialize Firebase
-		const app = initializeApp(firebaseConfig);
-		const analytics = getAnalytics(app);
-	</script>
+	<script type="module" src="js/firebase.js"></script>
 </head>
 
 <body id="top" class="ss-preload theme-particles">
@@ -564,9 +542,9 @@
     <!-- Java Script
     ================================================== -->
     <script src="js/plugins.js"></script>
-    <script src="js/main.js"></script>
     <script src="js/particles.min.js"></script>
-    <script src="js/particle-settings.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/particle-settings.js"></script>
 
 </body>
 
